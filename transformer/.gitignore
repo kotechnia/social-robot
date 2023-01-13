@@ -1,0 +1,6 @@
+**/*.ipynb
+
+**/*.csv
+**/*.log
+
+models

@@ -1,0 +1,17 @@
+torch==1.7.1+cu110
+torchvision==0.8.2+cu110
+tensorflow==2.8.0
+
+hsemotion
+facenet_pytorch
+scikit-learn
+timm==0.4.5
+opencv-python
+nltk
+
+jupyter
+
+nvidia-ml-py3
+protobuf==3.20.1
+
+--find-links https://download.pytorch.org/whl/torch_stable.html
