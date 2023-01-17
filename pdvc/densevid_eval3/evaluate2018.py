@@ -72,6 +72,9 @@ class ANETcaptions(object):
                     (Rouge(), "ROUGE_L"),
                     (Cider(), "CIDEr")
                 ]
+                self.video_scores = {
+                        'Bleu_4' : {},
+                        }
             else:
                 self.scorers = [(Meteor(), "METEOR")]
 
@@ -254,18 +257,24 @@ class ANETcaptions(object):
                 else:
                     score, scores = scorer.compute_score(gts[vid_id], res[vid_id])
                 all_scores[vid_id] = score
+                
 
             # print all_scores.values()
             if type(method) == list:
                 scores = np.mean(list(all_scores.values()), axis=0)
                 for m in range(len(method)):
-                    self.video_scores[method[m]] = {tiou:{key : value[m] for key, value in all_scores.items()}}
+                    if method[m] == 'Bleu_4':
+                        for key, value in all_scores.items():
+                            if key in self.video_scores[method[m]].keys():
+                                self.video_scores[method[m]][key].update({tiou:value[m]})
+                            else:
+                                self.video_scores[method[m]].update( {key: {tiou:value[m]}})
+
                     output[method[m]] = scores[m]
                     if self.verbose:
                         print("Calculated tIoU: %1.1f, %s: %0.3f" % (tiou, method[m], output[method[m]]))
             else:
                 output[method] = np.mean(list(all_scores.values()))
-                self.video_scores[method] = {tiou : all_scores}
                 if self.verbose:
                    print("Calculated tIoU: %1.1f, %s: %0.3f" % (tiou, method, output[method]))
 
@@ -280,6 +289,10 @@ def main(args):
                              verbose=args.verbose, no_lang_eval=args.no_lang_eval, lang=args.lang)
     evaluator.evaluate()
     # evaluator.scores['tiou'] = args.tious
+    for method, keys in evaluator.video_scores.items():
+        for key, scores in keys.items():
+            evaluator.video_scores[method][key].update({'avg':np.mean(list(scores.values()))})
+
     return evaluator.scores, evaluator.video_scores, evaluator.ground_truths
 
 
