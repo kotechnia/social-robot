@@ -59,16 +59,15 @@ def main(opt):
 
     for k, v in old_opt.items():
         if k[:4] != 'eval':
-            vars(opt).update({k: v})
+            vars(opt).update({k:v})
         elif 'caption_file' in k and not vars(opt)[k] :
             vars(opt).update({k: v})
-    
+
+    assert (opt.eval_caption_file and opt.eval_caption_file_para), "Required options: eval_caption_file, eval_caption_file_para"
 
     opt.transformer_input_type = opt.eval_transformer_input_type
     opt.gt_file_for_eval = [opt.eval_caption_file]
     opt.gt_file_for_para_eval = [opt.eval_caption_file_para]
-
-    opt.transformer_input_type = opt.eval_transformer_input_type
 
     if not torch.cuda.is_available():
         opt.nthreads = 0

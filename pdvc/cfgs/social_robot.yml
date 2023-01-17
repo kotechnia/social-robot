@@ -1,74 +1,44 @@
-
-id: interaction_robot 
-
-vocab_size: 9 
-dict_file: vocab_nia66.json
-token_type: json 
-lang:  
-
-train_caption_file: /home/jaewon/work/nia2022/2-66/notebook/pdvc_train_data.json
-eval_caption_file: /home/jaewon/work/nia2022/2-66/notebook/pdvc_valid_data.json
-val_caption_file: /home/jaewon/work/nia2022/2-66/notebook/pdvc_valid_data.json
-gt_file_for_eval:
-- /home/jaewon/work/nia2022/2-66/notebook/pdvc_valid_data.json
-gt_file_for_para_eval:
-- /home/jaewon/work/nia2022/2-66/notebook/pdvc_valid_data_para.json
-
-
-#train_caption_file: /home/hal/workspace/nia2022_66/2_66_data/10%/pdvc_data_230103_train_origin.json
-#eval_caption_file: /home/hal/workspace/nia2022_66/2_66_data/10%/pdvc_data_gt_230103_validation.json
-#val_caption_file: /home/hal/workspace/nia2022_66/2_66_data/10%/pdvc_data_230103_validation_origin.json
-#gt_file_for_eval:
-#- /home/hal/workspace/nia2022_66/2_66_data/10%/pdvc_data_230103_validation_origin.json
-#gt_file_for_para_eval:
-#- /home/hal/workspace/nia2022_66/2_66_data/10%/pdvc_data_gt_230103_validation.json
-
-
-visual_feature_folder:
-- datasets/features 
-
-
-
-epoch: 30 
-lr: 5.0e-05
-
-
 bbox_loss_coef: 0
-caption_loss_coef: 2
-giou_loss_coef: 4
-count_loss_coef: 0.5
-
-
 cap_nheads: 1
 caption_decoder_type: standard
-
+caption_loss_coef: 2
+count_loss_coef: 0.5
 dec_layers: 2
+dict_file: vocab_nia66.json
 ec_alpha: 1.0
 enc_layers: 2
-
-visual_feature_type:
-  - tsp
+epoch: 5 
+eval_caption_file: data/social_robot_test.json
+eval_caption_file_para: data/social_robot_gt_test.json
 feature_dim: 512
 fix_xcw: 1
-
+giou_loss_coef: 4
+gt_file_for_eval:
+- data/social_robot_validation.json
+gt_file_for_para_eval:
+- data/social_robot_gt_validation.json
 gt_proposal_sample_num: 30
-
+id: social_robot
+lang: null
 lloss_cross_entropy: 0
 lloss_focal_loss: 0
-
+lr: 5.0e-05
 num_queries: 10
-
 save_all_checkpoint: 0
 set_cost_bbox: 0
 set_cost_caption: 0
 set_cost_class: 2
 set_cost_giou: 4
 soft_attention: 1
-
+token_type: json
+train_caption_file: data/social_robot_train.json
 train_proposal_type: gt
-
 transformer_ff_dim: 512
-
+val_caption_file: data/social_robot_validation.json
+visual_feature_folder:
+- ../data/features
+visual_feature_type:
+- tsp
+vocab_size: 9
 weight_decay: 0.0001
 with_box_refine: 1
-
