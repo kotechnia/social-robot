@@ -9,16 +9,16 @@ import json
 import yaml
 import os
 
-class_mapper = {
-    "human_action" : {
-        1 : "고객 행위 의도 접근",
-        2 : "고객 행위 의도 주변파악",
-        3 : "고객 행위 의도 정보확인",
-        4 : "고객 행위 의도 감정표현",
-        5 : "고객 행위 의도 서성거림",
-        6 : "고객 행위 의도 자리이탈",
-    },
-}
+#class_mapper = {
+#    "human_action" : {
+#        1 : "고객 행위 의도 접근",
+#        2 : "고객 행위 의도 주변파악",
+#        3 : "고객 행위 의도 정보확인",
+#        4 : "고객 행위 의도 감정표현",
+#        5 : "고객 행위 의도 서성거림",
+#        6 : "고객 행위 의도 자리이탈",
+#    },
+#}
 
 def get_time(time_string):
     _time = time_string.strip()
@@ -27,14 +27,17 @@ def get_time(time_string):
     return _time
 
 def get_key(path):
-    path = os.path.basename(path)
-    key, _ = os.path.splitext(path)
-    key = key.strip()
-    key = key.split('_')
-    if key[-1] in ['color', 'rgb']:
-        key = key[:-1]
-    key = "_".join(key)
-    key = key.strip()
+    try:
+        path = os.path.basename(path)
+        key, _ = os.path.splitext(path)
+        key = key.strip()
+#    key = key.split('_')
+#    if key[-1] in ['color', 'rgb']:
+#        key = key[:-1]
+#    key = "_".join(key)
+#    key = key.strip()
+    except: 
+        print(path)
     return key
 
 
@@ -45,13 +48,14 @@ def trunc(_time):
 def refine_data_pdvc(data):
     data = data['video']
     video_id = get_key(data['video_id'])
+#    video_id = data['video_file_name'].replace('/mp4', '')
     video_duration = data['video_duration']
     _data = {'duration':video_duration, 'timestamps':[], 'sentences':[]}
     
     for interaction in data['interactions']:
         for action in interaction['human_event']['actions']:
-            action_class = eval(action['action_class'])
-            action_class = list(map(lambda x: class_mapper['human_action'][x], action_class))
+#            action_class = eval(action['action_class'])
+#            action_class = list(map(lambda x: class_mapper['human_action'][x], action_class))
             timestamp_start = action['action_start']
             timestamp_end = action['action_end']
             
@@ -59,10 +63,10 @@ def refine_data_pdvc(data):
                 timestamp_start = trunc(get_time(timestamp_start))
                 timestamp_end = trunc(get_time(timestamp_end))
                 
-                
+            
                 if timestamp_start < timestamp_end: 
                     _data['timestamps'].append([timestamp_start, timestamp_end])
-                    _data['sentences'].append(' '.join(action_class))
+                    _data['sentences'].append(action['action_discription'])
                     
                 else:
                     #print(f'ERROR : Time Reverse, start:{timestamp_start}, end:{timestamp_end}' )
@@ -87,13 +91,13 @@ def main(args):
     
     df_dataset_list = pd.read_csv(dataset_split_list)
 
-    df_videos = glob(os.path.join(video_root, '**/*.mp4'), recursive=True)
-    df_videos = pd.DataFrame({"video_path":df_videos})
+    df_videos = glob(os.path.join(feature_root, '**/**/*.npy'), recursive=True)
+    df_videos = pd.DataFrame({"video_path":list(set(df_videos))})
     df_videos['video_id'] = df_videos['video_path'].map(get_key)
 
-    df_jsons = glob(os.path.join(json_root, '**/*.json'), recursive=True)
+    df_jsons = glob(os.path.join(json_root, '**/**/**/*.json'), recursive=True)
     df_jsons = [x for x in df_jsons if os.path.isfile(x)]
-    df_jsons = pd.DataFrame({"json_path":df_jsons})
+    df_jsons = pd.DataFrame({"json_path":list(set(df_jsons))})
     df_jsons['video_id'] = df_jsons['json_path'].map(get_key)
 
     df_annotations = pd.merge(df_videos, df_jsons, on=['video_id'])
@@ -107,8 +111,12 @@ def main(args):
 
         data, video_id = refine_data_pdvc(data)
         if video_id is None : continue
+
+
         all_caption_data[video_id] = data
 
+#    video_id_mapper = list(all_caption_data.keys())   
+#    video_id_mapper = {get_key(id_) : id_ for id_ in video_id_mapper}   
 
     datasets = {'train':{}, 'validation':{}, 'test':{}}
     datasets_gt = {'train':{}, 'validation':{},'test':{}}
@@ -119,9 +127,12 @@ def main(args):
             video_id = df_dataset.loc[i, 'video_id']
 
             try:
+#                video_id = video_id_mapper[video_id]    
                 datasets[tvt][video_id] = all_caption_data[video_id]
                 datasets_gt[tvt][video_id] = '  '.join(all_caption_data[video_id]['sentences'])
-            except:
+            except Exception as e:
+#                print(e)
+#                print(video_id)
                 pass
 
     cnt = len(datasets['train'])+len(datasets['validation'])+len(datasets['test'])

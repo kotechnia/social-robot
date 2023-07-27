@@ -61,9 +61,18 @@ def main(args):
 
     df_dataset_list = pd.read_csv(dataset_split_list)
     gb = df_dataset_list.groupby(by='train_val_test')
-    trainset = gb.get_group('train')['video_id'].unique()
-    validset = gb.get_group('validation')['video_id'].unique()
-    testset = gb.get_group('test')['video_id'].unique()
+    try:
+        trainset = gb.get_group('train')['video_id'].unique()
+    except:
+        trainset = []
+    try:
+        validset = gb.get_group('validation')['video_id'].unique()
+    except:
+        validset = []
+    try:
+        testset = gb.get_group('test')['video_id'].unique()
+    except:
+        testset = []
 
     df_jsons = glob(os.path.join(annotation_json_root, '**/*.json'), recursive=True)
     df_jsons = [x for x in df_jsons if os.path.isfile(x)]

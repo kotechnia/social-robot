@@ -106,6 +106,8 @@ def main(args):
 
     if process_core > mp.cpu_count():
         process_core = mp.cpu_count()
+    elif process_core < process_num:
+        process_num = process_core
 
     filenames = glob(os.path.join(video_root, '**/*.mp4'), recursive=True)
 

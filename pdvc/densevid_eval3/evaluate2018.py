@@ -201,7 +201,10 @@ class ANETcaptions(object):
             # valid tIoU overlaps
             else:
                 # For each prediction, we look at the tIoU with ground truth
+#                max_proposal_score = max([pred['proposal_score'] for pred in self.prediction[vid_id]])
                 for pred in self.prediction[vid_id]:
+#                    if pred['proposal_score'] != max_proposal_score:
+#                        continue
                     has_added = False
                     for gt in self.ground_truths:
                         if vid_id not in gt:
@@ -316,6 +319,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     score = main(args)
-    print('json: {} \n args: {} \n score: {}'.format(args.submission,args,score))
-    avg_eval_score = {key: np.array(value).mean() for key, value in score.items()}
+    #print('json: {} \n args: {} \n score: {}'.format(args.submission,args,score[0]))
+    avg_eval_score = {key: np.array(value).mean() for key, value in score[0].items()}
     print('avg:\n{}'.format(avg_eval_score))

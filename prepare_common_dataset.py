@@ -35,7 +35,7 @@ def main(args):
     indices = list(df_annotations.index)
     np.random.shuffle(indices)
     train_indices = indices[:int(len(indices)*0.8)]
-    valid_indices = indices[int(len(indices)*0.8):int(len(indices)*0.9]
+    valid_indices = indices[int(len(indices)*0.8):int(len(indices)*0.9)]
     test_indices = indices[int(len(indices)*0.9):]
     
     df_annotations['train_val_test']='train'

@@ -67,9 +67,10 @@ class EvalVideoDataset(Dataset):
         idxs = EvalVideoDataset._resample_video_idx(self.clip_length, fps, self.frame_rate)
         vframes = vframes[idxs][:self.clip_length] # [:self.clip_length] for removing extra frames if isinstance(idxs, slice)
         if vframes.shape[0] != self.clip_length:
-            raise RuntimeError(f'<EvalVideoDataset>: got clip of length {vframes.shape[0]} != {self.clip_length}.'
-                               f'filename={filename}, clip_t_start={clip_t_start}, clip_t_end={clip_t_end}, '
-                               f'fps={fps}')
+            vframes = torch.cat([
+                vframes,
+                torch.zeros([self.clip_length - vframes.shape[0], vframes.shape[1], vframes.shape[2], vframes.shape[3]])
+            ], dim=0)
 
         sample['clip'] = self.transforms(vframes)
         sample['filename'] = filename

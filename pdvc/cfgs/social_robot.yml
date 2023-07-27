@@ -4,10 +4,10 @@ caption_decoder_type: standard
 caption_loss_coef: 2
 count_loss_coef: 0.5
 dec_layers: 2
-dict_file: vocab_nia66.json
+dict_file: vocab_nia2-066.json 
 ec_alpha: 1.0
 enc_layers: 2
-epoch: 5 
+epoch: 10
 eval_caption_file: data/social_robot_test.json
 eval_caption_file_para: data/social_robot_gt_test.json
 feature_dim: 512
@@ -39,6 +39,6 @@ visual_feature_folder:
 - ../data/features
 visual_feature_type:
 - tsp
-vocab_size: 9
+vocab_size: 87 
 weight_decay: 0.0001
 with_box_refine: 1
